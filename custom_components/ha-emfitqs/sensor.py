@@ -4,7 +4,7 @@ from datetime import timedelta
 import requests
 import voluptuous as vol
 import time
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorStateClass
 import homeassistant.helpers.config_validation as cv
 from homeassistant.const import (ATTR_ATTRIBUTION, CONF_HOST, CONF_SCAN_INTERVAL, CONF_RESOURCES)
 from homeassistant.util import Throttle
@@ -97,6 +97,7 @@ class EmfitQSTimeInBedSensor(Entity):
         self._icon = SENSOR_TYPES[self.type][2]
         self._resource = SENSOR_TYPES[self.type][3]
         self._state = None
+        self._attr_state_class = SensorStateClass.TOTAL
 
     @property
     def name(self):
@@ -146,6 +147,7 @@ class EmfitQSSensor(Entity):
         self._icon = SENSOR_TYPES[self.type][2]
         self._resource = SENSOR_TYPES[self.type][3]
         self._state = None
+        self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
     def name(self):
