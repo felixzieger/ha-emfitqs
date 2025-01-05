@@ -92,29 +92,16 @@ class EmfitQSTimeInBedSensor(Entity):
         self.last_presence_change = datetime.datetime.now()
         self.data = data
         self.type = sensor_type
-        self._name = SENSOR_PREFIX + serial + ' ' + SENSOR_TYPES[self.type][0]
-        self._unit = SENSOR_TYPES[self.type][1]
-        self._icon = SENSOR_TYPES[self.type][2]
-        self._resource = SENSOR_TYPES[self.type][3]
-        self._state = None
+        self._attr_name = SENSOR_PREFIX + serial + ' ' + SENSOR_TYPES[self.type][0]
+        self._attr_unit_of_measurement = SENSOR_TYPES[self.type][1]
+        self._attr_icon = SENSOR_TYPES[self.type][2]
         self._attr_state_class = SENSOR_TYPES[self.type][4]
+        self._attr_state = None
+        self._resource = SENSOR_TYPES[self.type][3]  # needed for update method
+        self._attr_device_state_attributes = {
+            ATTR_ATTRIBUTION: CONF_ATTRIBUTION
+        }
 
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def icon(self):
-        return self._icon
-
-    @property
-    def state(self):
-        return self._state
-
-    @property
-    def unit_of_measurement(self):
-        return self._unit
-    
     @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
         try:
@@ -124,59 +111,32 @@ class EmfitQSTimeInBedSensor(Entity):
             new_presence = self.data.data['pres']
             if new_presence == "1":            
                 new_ts = datetime.datetime.now() - self.last_presence_change 
-                self._state = round(new_ts.total_seconds())
+                self._attr_state = round(new_ts.total_seconds())
             else:
                 self.last_presence_change = datetime.datetime.now()            
-                self._state = 0
+                self._attr_state = 0
         except Exception as e:
             _LOGGER.error("Error ocurred: " + repr(e))
-
-    @property
-    def device_state_attributes(self):       
-        attrs = {}
-        attrs[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
-        return attrs
 
 class EmfitQSSensor(Entity):
 
     def __init__(self, serial, data, sensor_type):
         self.data = data
         self.type = sensor_type
-        self._name = SENSOR_PREFIX + serial + ' ' + SENSOR_TYPES[self.type][0]
-        self._unit = SENSOR_TYPES[self.type][1]
-        self._icon = SENSOR_TYPES[self.type][2]
-        self._resource = SENSOR_TYPES[self.type][3]
-        self._state = None
+        self._attr_name = SENSOR_PREFIX + serial + ' ' + SENSOR_TYPES[self.type][0]
+        self._attr_unit_of_measurement = SENSOR_TYPES[self.type][1]
+        self._attr_icon = SENSOR_TYPES[self.type][2]
         self._attr_state_class = SENSOR_TYPES[self.type][4]
-
-    @property
-    def name(self):
-        return self._name
-
-    @property
-    def icon(self):
-        return self._icon
-
-    @property
-    def state(self):
-        return self._state
-
-    @property
-    def unit_of_measurement(self):
-        return self._unit
+        self._attr_state = None
+        self._resource = SENSOR_TYPES[self.type][3]  # needed for update method
+        self._attr_device_state_attributes = {
+            ATTR_ATTRIBUTION: CONF_ATTRIBUTION
+        }
 
     def update(self):
         try:
             self.data.update()
             data = self.data.data
-            self._state = data[self._resource]
+            self._attr_state = data[self._resource]
         except Exception as e:
             _LOGGER.error("Error ocurred: " + repr(e))
-
-    @property
-    def device_state_attributes(self):       
-        attrs = {}
-
-        attrs[ATTR_ATTRIBUTION] = CONF_ATTRIBUTION
-
-        return attrs
