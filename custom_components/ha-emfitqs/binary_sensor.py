@@ -24,7 +24,7 @@ HOST = '192.168.1.40'
 SENSOR_PREFIX = 'EmfitQS '
 
 SENSOR_TYPES = {
-    'bed_presence': ['Bed Presence', '', 'mdi:bed','pres']
+    'bed_presence': ['Bed Presence', '', 'mdi:bed','pres', None]
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -92,6 +92,7 @@ class EmfitQSBinarySensor(BinarySensorEntity):
         self._icon = SENSOR_TYPES[self.type][2]
         self._resource = SENSOR_TYPES[self.type][3]
         self._state = None
+        self._attr_state_class = SENSOR_TYPES[self.type][4]
 
     @property
     def name(self):
